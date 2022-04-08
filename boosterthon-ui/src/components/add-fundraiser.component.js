@@ -167,7 +167,7 @@ export default class AddFundraiser extends Component {
 		this.setState({formErrors: newFieldValidationErrors,
 			fundlabelValid,
 			ratingValid,
-			rating: parsedRatingNum,
+			rating: parseInt(parsedRatingNum),
 			reviewValid,
 			emailValid,
 		}, this.doneValidating());
@@ -304,7 +304,7 @@ export default class AddFundraiser extends Component {
 						className="form-control"
 						id="rating"
 						required
-						value={this.state.rating || ""}
+						value={ this.state.rating || ""}
 						onChange={this.onInputFieldUpdate}
 						name="rating"
 					/>

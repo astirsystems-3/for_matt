@@ -4,7 +4,7 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Create a new Fundraiser
-  router.post("/", fundraiser.create);
+  router.post("/", fundraiser.validateCreateUpdate, fundraiser.create);
 
   // Retrieve all Fundraiser
   router.get("/", fundraiser.findAll);
@@ -16,7 +16,7 @@ module.exports = app => {
   router.get("/:id", fundraiser.findOne);
 
   // Update a Fundraiser with id
-  router.put("/:id", fundraiser.update);
+  router.put("/:id", fundraiser.validateCreateUpdate, fundraiser.update);
 
   // Delete a Fundraiser with id
   router.delete("/:id", fundraiser.delete);

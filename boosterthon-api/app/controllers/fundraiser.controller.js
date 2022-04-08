@@ -1,6 +1,59 @@
 const db = require("../models");
+const moment = require("moment");
 const Fundraiser = db.fundraisers;
 
+const inRange = (x, min, max) => {
+  return ((x-min)*(x-max) <= 0);
+}
+
+const validateEmail = (email2check)=>{
+  if(typeof(email2check) === 'string'){
+    let emailValid = email2check.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+    if(emailValid){
+      return true;
+    }
+  }else{
+    // email must be a string
+    return false;
+  };
+}
+// validate Middleware for create POST body
+exports.validateCreateUpdate = (req, res, next) => {
+  // validate create fundraiser body
+  console.log(req.body)
+  const ratingValue = parseInt(req.body.rating);
+  const isValid = (
+    // fundLabel
+    typeof(req.body.fundlabel) === 'string' &&
+    req.body.fundlabel['length'] >=3 &&
+
+    // rating
+    typeof(ratingValue) === "number" &&
+    inRange(ratingValue, 1,5) &&
+
+    // review
+    typeof(req.body.review) === 'string' &&
+    req.body.review['length'] >=3 &&
+
+    // Reviewer Name
+    typeof(req.body.reviewername) === 'string' &&
+    req.body.reviewername['length'] >=3 &&
+
+    // REVIEWER EMAIL
+    req.body.revieweremail &&
+    validateEmail(req.body.revieweremail) &&
+
+    // REVIEW DATE
+    moment(req.body.reviewDate).isValid()
+  );
+
+  if(isValid){
+    next();
+  }else{
+    res.status(400).send({message: "Form Body is incorrect"});
+  }
+
+}
 // Create and Save a new Fundraiser
 exports.create = (req, res) => {
   // Validate request
@@ -17,8 +70,6 @@ exports.create = (req, res) => {
 
     // Create a Fundraiser
     const newFundraiser = new Fundraiser({
-      title: req.body.title,
-      description: req.body.description,
       published: req.body.published ? req.body.published : false,
       
       fundlabel : req.body.fundlabel,
