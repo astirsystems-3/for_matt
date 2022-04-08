@@ -20,13 +20,19 @@ export default class AddFundraiser extends Component {
 				reviewdate:  new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}) ,
 
 			// Validation Field States
-			emailValid : null,
+			fundlabelValid : null,
 			ratingValid : null,
+			reviewValid : null,
+			reviewerValid : null,
+			emailValid : null,
 
 			// Error Notification Verbiage
 			formErrors : {
+				label : null,
+				rating : null,
+				review : null,
+				reviewer : null,
 				email : null,
-				rating : null
 			},
 
 
@@ -41,8 +47,11 @@ export default class AddFundraiser extends Component {
 	validateForm = () => {
 		console.log("\n ####VALIDATING FORM");
 		// Validate all required fields
-		this.validateField('revieweremail', this.state.revieweremail);
+		this.validateField('fundlabel', this.state.fundlabel);
 		this.validateField('rating', this.state.rating);
+		this.validateField('review', this.state.review);
+		this.validateField('reviewername', this.state.reviewername);
+		this.validateField('revieweremail', this.state.revieweremail);
 	}
 
 
@@ -56,17 +65,37 @@ export default class AddFundraiser extends Component {
 		// Current Form Error Notification Verbiage
 		let newFieldValidationErrors = this.state.formErrors;
 
-		// current isValid Bools
+		// current isValid Bools'
+		let fundlabelValid = this.state.fundlabelValid;
+		// let ratingValid = parseInt(this.state.ratingValid);
+		let ratingValid = this.state.ratingValid;
+		let reviewValid = this.state.reviewValid;
+		let reviewerValid = this.state.reviewerValid;
 		let emailValid = this.state.emailValid;
-		let ratingValid = parseInt(this.state.ratingValid);
+
+		let parsedRatingNum = parseInt(this.state.rating) || null;
+
 	
 		switch(fieldName) {
-			case 'revieweremail':
-				emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-				newFieldValidationErrors.email = emailValid ? '' : ' is invalid';
-				emailValid = emailValid ? false : null;
-				break;
+			// VALIDATE FUNDRAISER LABEL
+			case 'fundlabel':
+				fundlabelValid = (
+					typeof(value) === "string" &&
+					value.length >= 3 &&
+					true
+				);
 
+				if(fundlabelValid === true){
+					fundlabelValid = null;
+					newFieldValidationErrors.label = null;
+				}else{
+					fundlabelValid = false;
+					newFieldValidationErrors.label = ' needs to be at least 3 chars';
+				}
+
+				break;
+			
+			// VALIDATE RATING
 			case 'rating':
 				value = parseInt(value);
 				ratingValid = (
@@ -74,26 +103,73 @@ export default class AddFundraiser extends Component {
 					this.inRange(value, 1,5) &&
 					true
 				);
-				
-				// alert("ratingValid"+ratingValid);
 
 				if(ratingValid === true){
 					ratingValid = null;
+					parsedRatingNum = parseInt(value);
 					newFieldValidationErrors.rating = null;
 				}else{
 					ratingValid = false;
 					newFieldValidationErrors.rating = ' needs to be Number 1-5';
 				}
+				break;
 
-			// 	break;
+			// VALIDATE REVIEW
+			case 'review':
+				reviewValid = (
+					typeof(value) === "string" &&
+					value.length >= 3 &&
+					true
+				);
+
+				if(reviewValid === true){
+					reviewValid = null;
+					newFieldValidationErrors.review = null;
+				}else{
+					reviewValid = false;
+					newFieldValidationErrors.review = ' needs to be at least 3 chars';
+				}
+
+				break;
+
+			// VALIDATE REVIEWER NAME
+			case 'reviewername':
+				reviewerValid = (
+					typeof(value) === "string" &&
+					value.length >= 3 &&
+					true
+				);
+
+				if(reviewerValid === true){
+					reviewerValid = null;
+					newFieldValidationErrors.reviewer = null;
+				}else{
+					reviewerValid = false;
+					newFieldValidationErrors.reviewer = ' needs to be at least 3 chars';
+				}
+
+				break;
+
+			// VALIDATE EMAIL
+			case 'revieweremail':
+				emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+				newFieldValidationErrors.email = emailValid ? null : ' is invalid';
+				emailValid = emailValid ? false : null;
+				break;
+
+
+
 			default:
 				break;
 		}
 		
 		// Update Existing Validation Error Notification & isValid State
 		this.setState({formErrors: newFieldValidationErrors,
-			emailValid: emailValid,
-			ratingValid: ratingValid
+			fundlabelValid,
+			ratingValid,
+			rating: parsedRatingNum,
+			reviewValid,
+			emailValid,
 		}, this.doneValidating());
 	}
 
@@ -228,7 +304,7 @@ export default class AddFundraiser extends Component {
 						className="form-control"
 						id="rating"
 						required
-						value={this.state.rating}
+						value={this.state.rating || ""}
 						onChange={this.onInputFieldUpdate}
 						name="rating"
 					/>
@@ -242,7 +318,7 @@ export default class AddFundraiser extends Component {
 						className="form-control"
 						id="review"
 						required
-						value={this.state.review}
+						value={this.state.review || ""}
 						onChange={this.onInputFieldUpdate}
 						name="review"
 					/>
@@ -298,7 +374,7 @@ export default class AddFundraiser extends Component {
 							<h2>Form Errors: </h2>
 							<ul className="errorList" style={{color: "red"}}>
 								{
-									formErrorKeys.filter((errorKey)=> this.state.formErrors[errorKey] != null || this.state.formErrors[errorKey] != "" || this.state.formErrors[errorKey] != undefined ).map((errorKey, index) => (
+									formErrorKeys.filter((errorKey)=> this.state.formErrors[errorKey] != null ).map((errorKey, index) => (
 										<li	
 											key={"err_"+errorKey}
 										>
