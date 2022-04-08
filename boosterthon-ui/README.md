@@ -11,7 +11,7 @@ PORT=8081
 In the project directory, you can run:
 
 ```
-npm install
+npm install; npm audit fix --force
 # or
 yarn install
 ```

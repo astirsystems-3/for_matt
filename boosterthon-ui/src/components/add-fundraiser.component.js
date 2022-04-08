@@ -41,7 +41,7 @@ export default class AddFundraiser extends Component {
 	validateForm = () => {
 		console.log("\n ####VALIDATING FORM");
 		// Validate all required fields
-		this.validateField('revieweremail', this.state.revieweremail);
+			this.validateField('revieweremail', this.state.revieweremail);
 	}
 
 	/** Validate Form */
@@ -76,6 +76,15 @@ export default class AddFundraiser extends Component {
 	doneValidating = () => {
 		console.log("  ###=> Done Validating Form");
 		console.log(this.state)
+
+		// check for any errors
+		const formErrorKeys = Object.keys(this.state.formErrors);
+		const hasNoErrors = Object.values(this.state.formErrors).every(x => x === null || x === '' || x === undefined);
+		if(hasNoErrors){
+			this.saveFundraiser();
+		}else{
+			// still has form errors
+		}
 	}
 	
 	// validateEmail = () => {
@@ -105,10 +114,7 @@ export default class AddFundraiser extends Component {
 
 	/** Validate then Save if good, update errors state if bad */
 	saveFundraiser = () => {
-		alert('validating');
 		var data = {
-			title: this.state.title,
-			description: this.state.description,
 			fundlabel : this.state.fundlabel,
 			rating : this.state.rating,
 			review : this.state.review,
@@ -121,8 +127,6 @@ export default class AddFundraiser extends Component {
 			.then(response => {
 				this.setState({
 					id: response.data.id,
-					title: response.data.title,
-					description: response.data.description,
 					published: response.data.published,
 					fundlabel : response.data.fundlabel,
 					rating : response.data.rating,

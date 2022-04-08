@@ -14,7 +14,7 @@ class App extends Component {
         {/** PAGE NAVIGATION MENU */}
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <Link to={"/fundraisers"} className="navbar-brand">
-            BoosterThon Demo
+            BoosterThon Demo   
           </Link>
 
           {/* Top Navigation */}
@@ -22,7 +22,7 @@ class App extends Component {
 
             <li className="nav-item">
               <Link to={"/fundraisers"} className="nav-link">
-                Show Fundraisers
+                Show Fundraisers   
               </Link>
             </li>
 
