@@ -20,8 +20,8 @@ export default class AddFundraiser extends Component {
 				reviewdate:  new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}) ,
 
 			// Validation Field States
-			emailValid : false,
-			ratingValid : false,
+			emailValid : null,
+			ratingValid : null,
 
 			// Error Notification Verbiage
 			formErrors : {
@@ -41,7 +41,13 @@ export default class AddFundraiser extends Component {
 	validateForm = () => {
 		console.log("\n ####VALIDATING FORM");
 		// Validate all required fields
-			this.validateField('revieweremail', this.state.revieweremail);
+		this.validateField('revieweremail', this.state.revieweremail);
+		this.validateField('rating', this.state.rating);
+	}
+
+
+	inRange = (x, min, max) => {
+		return ((x-min)*(x-max) <= 0);
 	}
 
 	/** Validate Form */
@@ -52,15 +58,33 @@ export default class AddFundraiser extends Component {
 
 		// current isValid Bools
 		let emailValid = this.state.emailValid;
+		let ratingValid = parseInt(this.state.ratingValid);
 	
 		switch(fieldName) {
 			case 'revieweremail':
 				emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 				newFieldValidationErrors.email = emailValid ? '' : ' is invalid';
+				emailValid = emailValid ? false : null;
 				break;
-			// case 'password':
-			// 	passwordValid = value.length >= 6;
-			// 	fieldValidationErrors.password = passwordValid ? '': ' is too short';
+
+			case 'rating':
+				value = parseInt(value);
+				ratingValid = (
+					typeof(value) === "number" &&
+					this.inRange(value, 1,5) &&
+					true
+				);
+				
+				// alert("ratingValid"+ratingValid);
+
+				if(ratingValid === true){
+					ratingValid = null;
+					newFieldValidationErrors.rating = null;
+				}else{
+					ratingValid = false;
+					newFieldValidationErrors.rating = ' needs to be Number 1-5';
+				}
+
 			// 	break;
 			default:
 				break;
@@ -69,7 +93,7 @@ export default class AddFundraiser extends Component {
 		// Update Existing Validation Error Notification & isValid State
 		this.setState({formErrors: newFieldValidationErrors,
 			emailValid: emailValid,
-			// passwordValid: passwordValid
+			ratingValid: ratingValid
 		}, this.doneValidating());
 	}
 
@@ -274,7 +298,7 @@ export default class AddFundraiser extends Component {
 							<h2>Form Errors: </h2>
 							<ul className="errorList" style={{color: "red"}}>
 								{
-									formErrorKeys.filter((errorKey)=>this.state.formErrors[errorKey] != null).map((errorKey, index) => (
+									formErrorKeys.filter((errorKey)=> this.state.formErrors[errorKey] != null || this.state.formErrors[errorKey] != "" || this.state.formErrors[errorKey] != undefined ).map((errorKey, index) => (
 										<li	
 											key={"err_"+errorKey}
 										>
